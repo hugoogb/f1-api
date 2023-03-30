@@ -1,5 +1,5 @@
 export const drivers = {
-	"red-bull": [
+	"red-bull-racing": [
 		{
 			id: 1,
 			name: "Max Verstappen",
@@ -95,7 +95,7 @@ export const drivers = {
 			img: "/src/assets/imgs/drivers/lando-norris.png",
 		},
 	],
-	haas: [
+	"haas-f1-team": [
 		{
 			id: 15,
 			name: "Kevin Magnussen",
@@ -111,7 +111,7 @@ export const drivers = {
 			img: "/src/assets/imgs/drivers/nico-hulkenberg.png",
 		},
 	],
-	"alpha-tauri": [
+	alphatauri: [
 		{
 			id: 17,
 			name: "Nyck De Vries",
