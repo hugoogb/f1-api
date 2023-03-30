@@ -35,7 +35,10 @@ expressApp.get("/teams", (req, res) => {
 });
 
 expressApp.get("/drivers/:team_name", (req, res) => {
-	res.send(drivers[req.params.team_name]);
+	drivers[req.params.team_name]
+		? res.send(drivers[req.params.team_name])
+		: res.status(404).send({ message: "team_name does not exist" });
+
 	res.end();
 });
 
