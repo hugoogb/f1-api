@@ -1,12 +1,21 @@
 console.clear();
 
 import express from "express";
+import cors from "cors";
 
 import { teams } from "./assets/teams.js";
 import { drivers } from "./assets/drivers.js";
 
 const PORT = 3000;
 const expressApp = express();
+
+// enabling CORS for some specific origins only.
+let corsOptions = {
+	origin: ["http://localhost:5173"],
+};
+
+// enabling CORS for any unknown origin
+expressApp.use(cors(corsOptions));
 
 // middleware
 expressApp.use(express.json());
