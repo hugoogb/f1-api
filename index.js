@@ -79,7 +79,7 @@ expressApp.get("/teams", (req, res) => {
 		});
 });
 
-expressApp.get("/drivers/:team_name", (req, res) => {
+expressApp.get("/:team_name/drivers", (req, res) => {
 	const url = "https://www.formula1.com/en/teams.html";
 
 	fetch(url)
@@ -115,6 +115,7 @@ expressApp.get("/drivers/:team_name", (req, res) => {
 						.children("div.driver")
 						.each((i, driverDiv) => {
 							let driver = {};
+							driver["id"] = i;
 
 							driver["first-name"] = $(driverDiv)
 								.children("div.driver-info")
@@ -156,7 +157,92 @@ expressApp.get("/drivers/:team_name", (req, res) => {
 		});
 });
 
+expressApp.get("/drivers", (req, res) => {
+	const url = "https://www.formula1.com/en/drivers.html";
+
+	fetch(url)
+		.then((response) => response.text())
+		.then((text) => {
+			const $ = cheerio.load(text);
+
+			let drivers = [];
+
+			$("div.driver a.listing-item--link").each((i, driverContainer) => {
+				let driver = {};
+				driver["id"] = i;
+
+				driver["team-color"] = $(driverContainer)
+					.attr("style")
+					.split(":")[1];
+
+				const driverDiv = $(driverContainer).children("fieldset");
+
+				const divListingStanding = $(driverDiv).children(
+					"div.listing-standing"
+				);
+
+				driver["rank"] = $(divListingStanding)
+					.children("div.rank")
+					.text();
+				driver["points"] = $(divListingStanding)
+					.children("div.points")
+					.children("div:first")
+					.text();
+
+				driver["team"] = $(driverDiv).children("p").text();
+
+				const divListingName = $(driverDiv)
+					.children("div.container")
+					.children("div")
+					.children("div.listing-item--name");
+
+				driver["first-name"] = $(divListingName)
+					.children("span:first")
+					.text();
+
+				driver["last-name"] = $(divListingName)
+					.children("span:last")
+					.text();
+
+				driver["name"] = [
+					driver["first-name"],
+					driver["last-name"],
+				].join(" ");
+
+				driver["country-flag"] = $(driverDiv)
+					.children("div.container")
+					.children("div")
+					.children("div.country-flag")
+					.children("picture")
+					.children("img")
+					.attr("data-src");
+
+				const divListingImage = $(driverDiv).children(
+					"div.listing-item--image-wrapper"
+				);
+
+				driver["image"] = $(divListingImage)
+					.children("picture.listing-item--photo")
+					.children("img")
+					.attr("data-src");
+
+				driver["number-logo"] = $(divListingImage)
+					.children("picture.listing-item--number")
+					.children("img")
+					.attr("data-src");
+
+				drivers.push(driver);
+			});
+
+			res.send(drivers);
+			res.end();
+		})
+		.catch((err) => {
+			console.error(err);
+			res.status(500).send({ error_message: "Internal server error" });
+		});
+});
+
 expressApp.listen(PORT, () => {
-	console.clear();
 	console.log(`Server listening in port ${PORT}`);
 });
