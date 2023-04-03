@@ -110,7 +110,7 @@ app.get("/teams", (req, res) => {
 });
 
 app.get("/:team_name/drivers", (req, res) => {
-	const url = "https://www.formula1.com/en/teams.html";
+	const url = "https://www.formula1.com/en/drivers.html";
 
 	fetch(url)
 		.then((response) => response.text())
@@ -119,57 +119,83 @@ app.get("/:team_name/drivers", (req, res) => {
 
 			let drivers;
 
-			$(
-				"div.team-listing a.listing-link > fieldset.listing-item-wrapper > div.listing-item"
-			).each((i, teamDiv) => {
-				const divListingInfo = $(teamDiv).children("div.listing-info");
+			$("div.driver a.listing-item--link").each((i, driverContainer) => {
+				const driverDiv = $(driverContainer).children("fieldset");
 
-				const teamName = $(divListingInfo)
-					.children("div.name")
-					.children("span:last")
-					.text();
+				const teamName = $(driverDiv).children("p").text();
 
 				const normalizedTeamName = teamName
 					.split(" ")
 					.join("-")
 					.toLowerCase();
 
-				if (normalizedTeamName === req.params.team_name) {
-					drivers = [];
+				if (req.params.team_name === normalizedTeamName) {
+					if (drivers === undefined) {
+						drivers = [];
+					}
 
-					const divListingTeamDrivers = $(teamDiv).children(
-						"div.listing-team-drivers"
+					let driver = {};
+					driver["id"] = i;
+
+					driver["team-color"] = $(driverContainer)
+						.attr("style")
+						.split(":")[1];
+
+					const divListingStanding = $(driverDiv).children(
+						"div.listing-standing"
 					);
 
-					$(divListingTeamDrivers)
-						.children("div.driver")
-						.each((i, driverDiv) => {
-							let driver = {};
-							driver["id"] = i;
+					driver["rank"] = $(divListingStanding)
+						.children("div.rank")
+						.text();
+					driver["points"] = $(divListingStanding)
+						.children("div.points")
+						.children("div:first")
+						.text();
 
-							driver["first-name"] = $(driverDiv)
-								.children("div.driver-info")
-								.children("span.first-name")
-								.text();
+					const divListingName = $(driverDiv)
+						.children("div.container")
+						.children("div")
+						.children("div.listing-item--name");
 
-							driver["last-name"] = $(driverDiv)
-								.children("div.driver-info")
-								.children("span.last-name")
-								.text();
+					driver["first-name"] = $(divListingName)
+						.children("span:first")
+						.text();
 
-							driver["name"] = [
-								driver["first-name"],
-								driver["last-name"],
-							].join(" ");
+					driver["last-name"] = $(divListingName)
+						.children("span:last")
+						.text();
 
-							driver["image"] = $(driverDiv)
-								.children("div.driver-image")
-								.children("picture")
-								.children("img")
-								.attr("data-src");
+					driver["name"] = [
+						driver["first-name"],
+						driver["last-name"],
+					].join(" ");
 
-							drivers.push(driver);
-						});
+					driver["team"] = teamName;
+
+					driver["country-flag"] = $(driverDiv)
+						.children("div.container")
+						.children("div")
+						.children("div.country-flag")
+						.children("picture")
+						.children("img")
+						.attr("data-src");
+
+					const divListingImage = $(driverDiv).children(
+						"div.listing-item--image-wrapper"
+					);
+
+					driver["image"] = $(divListingImage)
+						.children("picture.listing-item--photo")
+						.children("img")
+						.attr("data-src");
+
+					driver["number-logo"] = $(divListingImage)
+						.children("picture.listing-item--number")
+						.children("img")
+						.attr("data-src");
+
+					drivers.push(driver);
 				}
 			});
 
