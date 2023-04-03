@@ -67,6 +67,36 @@ expressApp.get("/teams", (req, res) => {
 					.children("img")
 					.attr("data-src");
 
+				if (req.query["drivers"] === "yes") {
+					const divListingTeamDrivers = $(teamDiv).children(
+						"div.listing-team-drivers"
+					);
+
+					team["drivers"] = [];
+					$(divListingTeamDrivers)
+						.children("div.driver")
+						.each((i, driverDiv) => {
+							let driver = {};
+
+							driver["first-name"] = $(driverDiv)
+								.children("div.driver-info")
+								.children("span.first-name")
+								.text();
+
+							driver["last-name"] = $(driverDiv)
+								.children("div.driver-info")
+								.children("span.last-name")
+								.text();
+
+							driver["name"] = [
+								driver["first-name"],
+								driver["last-name"],
+							].join(" ");
+
+							team["drivers"].push(driver);
+						});
+				}
+
 				teams.push(team);
 			});
 
