@@ -3,22 +3,22 @@ import cors from "cors";
 import * as cheerio from "cheerio";
 
 const PORT = 3000;
-const expressApp = express();
+const app = express();
 
 // enabling CORS for some specific origins only.
 let corsOptions = {
 	origin: ["http://localhost:5173"],
 };
 
-expressApp.use(express.static("public"));
+app.use(express.static("public"));
 
 // enabling CORS for known origin
-expressApp.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 // middleware
-expressApp.use(express.json());
+app.use(express.json());
 
-expressApp.get("/teams", (req, res) => {
+app.get("/teams", (req, res) => {
 	const url = "https://www.formula1.com/en/teams.html";
 
 	fetch(url)
@@ -109,7 +109,7 @@ expressApp.get("/teams", (req, res) => {
 		});
 });
 
-expressApp.get("/:team_name/drivers", (req, res) => {
+app.get("/:team_name/drivers", (req, res) => {
 	const url = "https://www.formula1.com/en/teams.html";
 
 	fetch(url)
@@ -187,7 +187,7 @@ expressApp.get("/:team_name/drivers", (req, res) => {
 		});
 });
 
-expressApp.get("/drivers", (req, res) => {
+app.get("/drivers", (req, res) => {
 	const url = "https://www.formula1.com/en/drivers.html";
 
 	fetch(url)
@@ -273,6 +273,11 @@ expressApp.get("/drivers", (req, res) => {
 		});
 });
 
-expressApp.listen(PORT, () => {
+app.use((req, res) => {
+	res.status(404).send({ error_message: "Route not found" });
+	res.end();
+});
+
+app.listen(PORT, () => {
 	console.log(`Server listening in port ${PORT}`);
 });
