@@ -1,10 +1,6 @@
-console.clear();
-
 import express from "express";
 import cors from "cors";
 import * as cheerio from "cheerio";
-
-import { drivers } from "./assets/drivers.js";
 
 const PORT = 3000;
 const expressApp = express();
@@ -25,12 +21,12 @@ expressApp.use(express.json());
 expressApp.get("/teams", (req, res) => {
 	const url = "https://www.formula1.com/en/teams.html";
 
-	let teams = [];
-
 	fetch(url)
 		.then((response) => response.text())
 		.then((text) => {
 			const $ = cheerio.load(text);
+
+			let teams = [];
 
 			$(
 				"div.team-listing a.listing-link > fieldset.listing-item-wrapper > div.listing-item"
@@ -57,44 +53,16 @@ expressApp.get("/teams", (req, res) => {
 					.children("div.name")
 					.children("span:last")
 					.text();
-				team["logo-url"] = $(divListingInfo)
+				team["logo"] = $(divListingInfo)
 					.children("div.logo")
 					.children("picture.team-car")
 					.children("img")
 					.attr("data-src");
 
-				const divListingTeamDrivers = $(teamDiv).children(
-					"div.listing-team-drivers"
-				);
-
-				team["drivers"] = [];
-				$(divListingTeamDrivers)
-					.children("div.driver")
-					.each((i, driverDiv) => {
-						let driver = {};
-
-						driver["first-name"] = $(driverDiv)
-							.children("div.driver-info")
-							.children("span.first-name")
-							.text();
-
-						driver["last-name"] = $(driverDiv)
-							.children("div.driver-info")
-							.children("span.last-name")
-							.text();
-
-						driver["name"] = [
-							driver["first-name"],
-							driver["last-name"],
-						].join(" ");
-
-						team["drivers"].push(driver);
-					});
-
 				const divListingImage =
 					$(teamDiv).children("div.listing-image");
 
-				team["img-url"] = $(divListingImage)
+				team["image"] = $(divListingImage)
 					.children("picture.team-car")
 					.children("img")
 					.attr("data-src");
@@ -104,18 +72,91 @@ expressApp.get("/teams", (req, res) => {
 
 			res.send(teams);
 			res.end();
+		})
+		.catch((err) => {
+			console.error(err);
+			res.status(500).send({ error_message: "Internal server error" });
 		});
 });
 
 expressApp.get("/drivers/:team_name", (req, res) => {
-	const $ = cheerio
-		.fromURL("https://www.formula1.com/en/drivers.html")
-		.then((response) => console.log(response.text()));
-	drivers[req.params.team_name]
-		? res.send(drivers[req.params.team_name])
-		: res.status(404).send({ message: "team_name does not exist" });
+	const url = "https://www.formula1.com/en/teams.html";
 
-	res.end();
+	fetch(url)
+		.then((response) => response.text())
+		.then((text) => {
+			const $ = cheerio.load(text);
+
+			let drivers;
+
+			$(
+				"div.team-listing a.listing-link > fieldset.listing-item-wrapper > div.listing-item"
+			).each((i, teamDiv) => {
+				const divListingInfo = $(teamDiv).children("div.listing-info");
+
+				const teamName = $(divListingInfo)
+					.children("div.name")
+					.children("span:last")
+					.text();
+
+				const normalizedTeamName = teamName
+					.split(" ")
+					.join("-")
+					.toLowerCase();
+
+				if (normalizedTeamName === req.params.team_name) {
+					drivers = [];
+
+					const divListingTeamDrivers = $(teamDiv).children(
+						"div.listing-team-drivers"
+					);
+
+					$(divListingTeamDrivers)
+						.children("div.driver")
+						.each((i, driverDiv) => {
+							let driver = {};
+
+							driver["first-name"] = $(driverDiv)
+								.children("div.driver-info")
+								.children("span.first-name")
+								.text();
+
+							driver["last-name"] = $(driverDiv)
+								.children("div.driver-info")
+								.children("span.last-name")
+								.text();
+
+							driver["name"] = [
+								driver["first-name"],
+								driver["last-name"],
+							].join(" ");
+
+							driver["image"] = $(driverDiv)
+								.children("div.driver-image")
+								.children("picture")
+								.children("img")
+								.attr("data-src");
+
+							drivers.push(driver);
+						});
+				}
+			});
+
+			drivers === undefined
+				? res.status(404).send({
+						error_message:
+							"Used parameter team_name does not exist",
+				  })
+				: res.send(drivers);
+			res.end();
+		})
+		.catch((err) => {
+			console.error(err);
+			res.status(500).send({ error_message: "Internal server error" });
+		});
 });
 
-expressApp.listen(PORT, () => console.log(`Server listening in port ${PORT}`));
+expressApp.listen(PORT, () => {
+	console.clear();
+	console.log(`Server listening in port ${PORT}`);
+});
