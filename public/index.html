@@ -11,8 +11,10 @@
     <h2>Available endpoints</h2>
     <h3>/teams</h3>
     <p>Get all teams info, returned as json array</p>
-    <h3>/drivers/:team_name</h3>
-    <p>Get drivers of a team (:team_name) specified as parameter, returned as json array</p>
+    <h3>/teams?drivers=yes</h3>
+    <p>Get all teams info plus drivers name of every team, returned as json array</p>
+    <h3>/:team_name/drivers</h3>
+    <p>Get drivers of a team <strong>:team_name</strong> specified as parameter, returned as json array</p>
     <h4>Available :team_name</h4>
     <ul>
         <li>red-bull-racing</li>
@@ -26,6 +28,8 @@
         <li>alfa-romeo</li>
         <li>williams</li>
     </ul>
+    <h3>/drivers/</h3>
+    <p>Get all drivers info, returned as json array</p>
 </body>
 
 </html>
