@@ -1,10 +1,9 @@
 console.clear();
 
-import express, { response } from "express";
+import express from "express";
 import cors from "cors";
 import * as cheerio from "cheerio";
 
-import { teams } from "./assets/teams.js";
 import { drivers } from "./assets/drivers.js";
 
 const PORT = 3000;
