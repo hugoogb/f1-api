@@ -240,33 +240,6 @@ driversRouter.get("/profile/:driver_name", (req, res) => {
 				.split("\n")[1]
 				.trim();
 
-			res.send(driver);
-			res.end();
-		})
-		.catch((err) => {
-			console.error(err);
-
-			res.status(500).send({
-				error_message: "Internal server error",
-			});
-		});
-});
-
-driversRouter.get("/stats/:driver_name", (req, res) => {
-	// TODO : handle incorrect names
-	const url = `https://www.formula1.com/en/drivers/${req.params.driver_name}.html`;
-
-	fetch(url)
-		.then((response) => response.text())
-		.then((text) => {
-			const $ = cheerio.load(text);
-
-			let driver = {};
-
-			const driverHeader = $(
-				"main.template-driverdetails header.driver-details"
-			);
-
 			const statsSection = $(driverHeader)
 				.children("section.stats")
 				.children("div.driver-stats");
@@ -301,8 +274,9 @@ driversRouter.get("/stats/:driver_name", (req, res) => {
 		})
 		.catch((err) => {
 			console.error(err);
-			res.status(404).send({
-				error_message: "Used parameter :driver_name does not exist",
+
+			res.status(500).send({
+				error_message: "Internal server error",
 			});
 		});
 });
