@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 
 import teamsRouter from "./routes/teams.js";
 import driversRouter from "./routes/drivers.js";
+import morgan from "morgan";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use(express.static("public"));
 app.use(cors(corsOptions));
 
 // middleware
+app.use(morgan("dev"));
 app.use(express.json());
 app.use("/teams", teamsRouter);
 app.use("/drivers", driversRouter);
