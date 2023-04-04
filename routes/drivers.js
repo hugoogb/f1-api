@@ -15,6 +15,7 @@ driversRouter.get("/", (req, res) => {
 
 			$("div.driver a.listing-item--link").each((i, driverContainer) => {
 				let driver = {};
+
 				driver["id"] = i;
 
 				driver["team-color"] = $(driverContainer)
@@ -30,6 +31,7 @@ driversRouter.get("/", (req, res) => {
 				driver["rank"] = $(divListingStanding)
 					.children("div.rank")
 					.text();
+
 				driver["points"] = $(divListingStanding)
 					.children("div.points")
 					.children("div:first")
@@ -82,10 +84,6 @@ driversRouter.get("/", (req, res) => {
 
 			res.send(drivers);
 			res.end();
-		})
-		.catch((err) => {
-			console.error(err);
-			res.status(500).send({ error_message: "Internal server error" });
 		});
 });
 
@@ -115,6 +113,7 @@ driversRouter.get("/:team_name", (req, res) => {
 					}
 
 					let driver = {};
+
 					driver["id"] = i;
 
 					driver["team-color"] = $(driverContainer)
@@ -128,6 +127,7 @@ driversRouter.get("/:team_name", (req, res) => {
 					driver["rank"] = $(divListingStanding)
 						.children("div.rank")
 						.text();
+
 					driver["points"] = $(divListingStanding)
 						.children("div.points")
 						.children("div:first")
@@ -186,10 +186,6 @@ driversRouter.get("/:team_name", (req, res) => {
 				  })
 				: res.send(drivers);
 			res.end();
-		})
-		.catch((err) => {
-			console.error(err);
-			res.status(500).send({ error_message: "Internal server error" });
 		});
 });
 
@@ -271,13 +267,6 @@ driversRouter.get("/profile/:driver_name", (req, res) => {
 
 			res.send(driver);
 			res.end();
-		})
-		.catch((err) => {
-			console.error(err);
-
-			res.status(500).send({
-				error_message: "Internal server error",
-			});
 		});
 });
 
