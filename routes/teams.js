@@ -148,6 +148,56 @@ teamsRouter.get("/:team_name", (req, res) => {
 				team[statKey] = statValue;
 			});
 
+			if (req.query["drivers"] === "yes") {
+				const profileSection = $(teamHeader)
+					.children("section.profile")
+					.children("ul.drivers");
+
+				team["drivers"] = [];
+
+				$(profileSection)
+					.children("li")
+					.each((i, driverLi) => {
+						let driver = {};
+
+						driver["name"] = $(driverLi)
+							.children("a.driver-teaser")
+							.children("figure")
+							.children("figcaption.driver-details")
+							.children("h1.driver-name")
+							.text()
+							.split("\n")[1]
+							.trim();
+
+						driver["number"] = $(driverLi)
+							.children("a.driver-teaser")
+							.children("figure")
+							.children("figcaption.driver-details")
+							.children("div.driver-number")
+							.children("span")
+							.text();
+
+						driver["team"] = $(driverLi)
+							.children("a.driver-teaser")
+							.children("figure")
+							.children("figcaption.driver-details")
+							.children("p.driver-team")
+							.children("span")
+							.text();
+
+						driver["image"] = $(driverLi)
+							.children("a.driver-teaser")
+							.children("figure")
+							.children("div.driver-teaser-image")
+							.children("div.driver-image-crop-outer")
+							.children("div.driver-image-crop-inner")
+							.children("div.fom-adaptiveimage")
+							.attr("data-path");
+
+						team["drivers"].push(driver);
+					});
+			}
+
 			res.send(team);
 			res.end();
 		})
