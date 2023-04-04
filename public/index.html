@@ -7,15 +7,13 @@
 </head>
 
 <body>
-    <h1>F1 API</h1>
-    <h2>Available endpoints</h2>
-    <h3>/teams</h3>
-    <p>Get all teams info, returned as json array</p>
-    <h3>/teams?drivers=yes</h3>
-    <p>Get all teams info plus drivers name of every team, returned as json array</p>
-    <h3>/drivers/:team_name</h3>
-    <p>Get drivers of a team <strong>:team_name</strong> specified as parameter, returned as json array</p>
+    <h1>F1 API endpoints</h1>
+    <p>All endpoints return a json object when talking about a single team/driver or a json array when there is more
+        than one</p>
+
+    <h2>Teams</h2>
     <h4>Available :team_name</h4>
+    <p><strong>:team_name</strong> -> lowercase and "-" instead of " " (space)</p>
     <ul>
         <li>red-bull-racing</li>
         <li>ferrari</li>
@@ -28,8 +26,23 @@
         <li>alfa-romeo</li>
         <li>williams</li>
     </ul>
+    <h3>/teams</h3>
+    <p>Get all teams info</p>
+    <h3>/teams?drivers=yes</h3>
+    <p>Get all teams info plus drivers of every team</p>
+    <h3>/teams/:team_name</h3>
+    <p>Get single team <strong>:team_name</strong> info</p>
+    <h3>/teams/:team_name?drivers=yes</h3>
+    <p>Get single team <strong>:team_name</strong> info plus drivers of the team</p>
+
+    <h2>Drivers</h2>
     <h3>/drivers</h3>
     <p>Get all drivers info, returned as json array</p>
+    <h3>/drivers/:team_name</h3>
+    <p>Get drivers of a single team <strong>:team_name</strong></p>
+    <h3>/drivers/profile/:driver_name</h3>
+    <p>Get profile and stats of a single driver <strong>:driver_name</strong></p>
+    <p><strong>:driver_name</strong> -> lowercase and "-" instead of " " (space)</p>
 </body>
 
 </html>

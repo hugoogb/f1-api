@@ -16,9 +16,6 @@ let corsOptions = {
 	origin: ["http://localhost:5173"],
 };
 
-// static "home /" page
-app.use(express.static("public"));
-
 // enabling CORS for known origin
 app.use(cors(corsOptions));
 
@@ -27,6 +24,9 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use("/teams", teamsRouter);
 app.use("/drivers", driversRouter);
+
+// static "home /" page
+app.use(express.static("public"));
 
 app.use((req, res) => {
 	res.status(404).send({ error_message: "Route not found" });
