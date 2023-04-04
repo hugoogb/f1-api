@@ -64,15 +64,7 @@ teamsRouter.get("/", (req, res) => {
 });
 
 teamsRouter.get("/:team_name", (req, res) => {
-	const teamName = req.params.team_name.split("-");
-
-	const normalizedTeamName = teamName
-		.map((word) => {
-			return word[0].toUpperCase() + word.substring(1);
-		})
-		.join("-");
-
-	const url = `https://www.formula1.com/en/teams/${normalizedTeamName}.html`;
+	const url = `https://www.formula1.com/en/teams/${req.params.team_name}.html`;
 
 	fetch(url)
 		.then((response) => response.text())

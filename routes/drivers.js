@@ -102,10 +102,7 @@ driversRouter.get("/:team_name", (req, res) => {
 
 				const teamName = $(driverDiv).children("p").text();
 
-				const normalizedTeamName = teamName
-					.split(" ")
-					.join("-")
-					.toLowerCase();
+				const normalizedTeamName = teamName.split(" ").join("-");
 
 				if (req.params.team_name === normalizedTeamName) {
 					if (drivers === undefined) {
