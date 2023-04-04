@@ -26,6 +26,7 @@ teamsRouter.get("/", (req, res) => {
 				team["rank"] = $(divListingStanding)
 					.children("div.rank")
 					.text();
+
 				team["points"] = $(divListingStanding)
 					.children("div.points")
 					.children("div:first")
@@ -34,11 +35,13 @@ teamsRouter.get("/", (req, res) => {
 				const divListingInfo = $(teamDiv).children("div.listing-info");
 
 				team["color"] = $(divListingInfo).attr("style").split(":")[1];
+
 				team["name"] = $(divListingInfo)
 					.children("div.name")
 					.children("span:last")
 					.text();
-				team["logo"] = $(divListingInfo)
+
+				team["logo-small"] = $(divListingInfo)
 					.children("div.logo")
 					.children("picture.team-car")
 					.children("img")
@@ -47,50 +50,16 @@ teamsRouter.get("/", (req, res) => {
 				const divListingImage =
 					$(teamDiv).children("div.listing-image");
 
-				team["image"] = $(divListingImage)
+				team["image-car"] = $(divListingImage)
 					.children("picture.team-car")
 					.children("img")
 					.attr("data-src");
-
-				if (req.query["drivers"] === "yes") {
-					const divListingTeamDrivers = $(teamDiv).children(
-						"div.listing-team-drivers"
-					);
-
-					team["drivers"] = [];
-					$(divListingTeamDrivers)
-						.children("div.driver")
-						.each((i, driverDiv) => {
-							let driver = {};
-
-							driver["first-name"] = $(driverDiv)
-								.children("div.driver-info")
-								.children("span.first-name")
-								.text();
-
-							driver["last-name"] = $(driverDiv)
-								.children("div.driver-info")
-								.children("span.last-name")
-								.text();
-
-							driver["name"] = [
-								driver["first-name"],
-								driver["last-name"],
-							].join(" ");
-
-							team["drivers"].push(driver);
-						});
-				}
 
 				teams.push(team);
 			});
 
 			res.send(teams);
 			res.end();
-		})
-		.catch((err) => {
-			console.error(err);
-			res.status(500).send({ error_message: "Internal server error" });
 		});
 });
 
@@ -103,7 +72,6 @@ teamsRouter.get("/:team_name", (req, res) => {
 		})
 		.join("-");
 
-	// TODO : handle incorrect names
 	const url = `https://www.formula1.com/en/teams/${normalizedTeamName}.html`;
 
 	fetch(url)
@@ -148,64 +116,8 @@ teamsRouter.get("/:team_name", (req, res) => {
 				team[statKey] = statValue;
 			});
 
-			if (req.query["drivers"] === "yes") {
-				const profileSection = $(teamHeader)
-					.children("section.profile")
-					.children("ul.drivers");
-
-				team["drivers"] = [];
-
-				$(profileSection)
-					.children("li")
-					.each((i, driverLi) => {
-						let driver = {};
-
-						driver["name"] = $(driverLi)
-							.children("a.driver-teaser")
-							.children("figure")
-							.children("figcaption.driver-details")
-							.children("h1.driver-name")
-							.text()
-							.split("\n")[1]
-							.trim();
-
-						driver["number"] = $(driverLi)
-							.children("a.driver-teaser")
-							.children("figure")
-							.children("figcaption.driver-details")
-							.children("div.driver-number")
-							.children("span")
-							.text();
-
-						driver["team"] = $(driverLi)
-							.children("a.driver-teaser")
-							.children("figure")
-							.children("figcaption.driver-details")
-							.children("p.driver-team")
-							.children("span")
-							.text();
-
-						driver["image"] = $(driverLi)
-							.children("a.driver-teaser")
-							.children("figure")
-							.children("div.driver-teaser-image")
-							.children("div.driver-image-crop-outer")
-							.children("div.driver-image-crop-inner")
-							.children("div.fom-adaptiveimage")
-							.attr("data-path");
-
-						team["drivers"].push(driver);
-					});
-			}
-
 			res.send(team);
 			res.end();
-		})
-		.catch((err) => {
-			console.error(err);
-			res.status(404).send({
-				error_message: "Used parameter :team_name does not exist",
-			});
 		});
 });
 
