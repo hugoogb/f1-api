@@ -193,4 +193,101 @@ driversRouter.get("/:team_name", (req, res) => {
 		});
 });
 
+driversRouter.get("/profile/:driver_name", (req, res) => {
+	// TODO : handle incorrect names
+	const url = `https://www.formula1.com/en/drivers/${req.params.driver_name}.html`;
+
+	fetch(url)
+		.then((response) => response.text())
+		.then((text) => {
+			const $ = cheerio.load(text);
+
+			let driver = {};
+
+			const driverHeader = $(
+				"main.template-driverdetails header.driver-details"
+			);
+
+			const figureDriver = $(driverHeader)
+				.children("section.profile")
+				.children("div")
+				.children("figure.driver-title");
+
+			driver["image"] = $(figureDriver)
+				.children("div.driver-main-image")
+				.children("div.driver-image-crop-outer")
+				.children("div.driver-image-crop-inner")
+				.children("div.fom-adaptiveimage")
+				.attr("data-path");
+
+			driver["number"] = $(figureDriver)
+				.children("figcaption.driver-details")
+				.children("div.driver-number")
+				.children("span:first")
+				.text();
+
+			driver["flag-icon"] = $(figureDriver)
+				.children("figcaption.driver-details")
+				.children("div.driver-number")
+				.children("span.icn-flag")
+				.children("img")
+				.attr("src");
+
+			driver["name"] = $(figureDriver)
+				.children("figcaption.driver-details")
+				.children("h1.driver-name")
+				.text()
+				.split("\n")[1]
+				.trim();
+
+			res.send(driver);
+			res.end();
+		})
+		.catch((err) => {
+			console.error(err);
+
+			res.status(500).send({
+				error_message: "Internal server error",
+			});
+		});
+});
+
+driversRouter.get("/stats/:driver_name", (req, res) => {
+	// TODO : handle incorrect names
+	const url = `https://www.formula1.com/en/drivers/${req.params.driver_name}.html`;
+
+	fetch(url)
+		.then((response) => response.text())
+		.then((text) => {
+			const $ = cheerio.load(text);
+
+			let driver = {};
+
+			const driverHeader = $(
+				"main.template-driverdetails header.driver-details"
+			);
+
+			const statsSection = $(driverHeader)
+				.children("section.stats")
+				.children("div.driver-stats");
+
+			driver["helmet-image"] = $(statsSection)
+				.children("section.extra-info")
+				.children("div.brand-logo")
+				.children("img")
+				.attr("src");
+
+			// TODO : get table info with stats
+
+			res.send(driver);
+			res.end();
+		})
+		.catch((err) => {
+			console.error(err);
+			res.status(404).send({
+				error_message: "Used parameter :driver_name does not exist",
+			});
+		});
+});
+
 export default driversRouter;
