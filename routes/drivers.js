@@ -277,7 +277,24 @@ driversRouter.get("/stats/:driver_name", (req, res) => {
 				.children("img")
 				.attr("src");
 
-			// TODO : get table info with stats
+			const statsTable = $(statsSection)
+				.children("table.stat-list")
+				.children("tbody")
+				.children("tr");
+
+			$(statsTable).each((i, stat) => {
+				const statKey = $(stat)
+					.children("th.stat-key")
+					.children("span.text")
+					.text()
+					.split(" ")
+					.join("-")
+					.toLowerCase();
+
+				const statValue = $(stat).children("td.stat-value").text();
+
+				driver[statKey] = statValue;
+			});
 
 			res.send(driver);
 			res.end();
