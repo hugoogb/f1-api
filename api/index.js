@@ -22,8 +22,8 @@ app.use(cors(corsOptions));
 // middleware
 app.use(morgan("dev"));
 app.use(express.json());
-app.use("/teams", teamsRouter);
-app.use("/drivers", driversRouter);
+app.use("/api/teams", teamsRouter);
+app.use("/api/drivers", driversRouter);
 
 // static "home /" page
 app.use(express.static("public"));
