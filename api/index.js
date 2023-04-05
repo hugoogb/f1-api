@@ -12,12 +12,15 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 // enabling CORS for some specific origins only.
-let corsOptions = {
-	origin: ["http://localhost:5173"],
-};
+// let corsOptions = {
+// 	origin: ["http://localhost:5173"],
+// };
 
 // enabling CORS for known origin
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+
+// enabling CORS for all origins
+app.use(cors());
 
 // middleware
 app.use(morgan("dev"));
