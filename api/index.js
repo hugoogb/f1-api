@@ -12,19 +12,19 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 // enabling CORS for some specific origins only.
-let corsOptions = {
-	origin: [
-		"https://f1-showcase.vercel.app/",
-		"https://f1-showcase-hugoogb.vercel.app/",
-		"https://f1-showcase-git-master-hugoogb.vercel.app/",
-	],
-};
+// let corsOptions = {
+// 	origin: [
+// 		"https://f1-showcase.vercel.app/",
+// 		"https://f1-showcase-hugoogb.vercel.app/",
+// 		"https://f1-showcase-git-master-hugoogb.vercel.app/",
+// 	],
+// };
 
 // enabling CORS for known origin
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
 // enabling CORS for all origins
-// app.use(cors());
+app.use(cors());
 
 // middleware
 app.use(morgan("dev"));
