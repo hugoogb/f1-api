@@ -3,6 +3,8 @@ import { Driver } from "../types/drivers.types";
 import { PostgrestError } from "@supabase/supabase-js";
 import { scrapeDrivers } from "../scraper";
 import { supabase } from "../services/supabase";
+import { areDriversDifferent } from "../utils/drivers";
+import { DRIVER_PROPERTIES_TO_CHECK } from "../constants/drivers.constants";
 
 export const driversRouter = Router();
 
@@ -23,24 +25,11 @@ driversRouter.get("/", async (req, res) => {
     const scrapedDrivers = await scrapeDrivers();
     scrapedDrivers.sort((a, b) => a.lastName.localeCompare(b.lastName));
 
-    const isDifferent =
-      !drivers ||
-      drivers.length !== scrapedDrivers.length ||
-      drivers.some((driver) => {
-        const scrapedDriver = scrapedDrivers.find(
-          (d) =>
-            d.firstName === driver.firstName && d.lastName === driver.lastName
-        );
-        return (
-          !scrapedDriver ||
-          driver.rank !== scrapedDriver.rank ||
-          driver.points !== scrapedDriver.points ||
-          driver.team !== scrapedDriver.team ||
-          driver.countryFlag !== scrapedDriver.countryFlag ||
-          driver.image !== scrapedDriver.image ||
-          driver.numberLogo !== scrapedDriver.numberLogo
-        );
-      });
+    const isDifferent = areDriversDifferent(
+      drivers,
+      scrapedDrivers,
+      DRIVER_PROPERTIES_TO_CHECK
+    );
 
     if (isDifferent) {
       const { error: deleteError } = await supabase

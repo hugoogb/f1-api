@@ -3,6 +3,8 @@ import { scrapeTeams } from "../scraper";
 import { supabase } from "../services/supabase";
 import { Team } from "../types/teams.types";
 import { PostgrestError } from "@supabase/supabase-js";
+import { areTeamsDifferent } from "../utils/teams";
+import { TEAM_PROPERTIES_TO_CHECK } from "../constants/teams.constants";
 
 export const teamsRouter = Router();
 
@@ -23,22 +25,11 @@ teamsRouter.get("/", async (req, res) => {
     const scrapedTeams = await scrapeTeams();
     scrapedTeams.sort((a, b) => a.name.localeCompare(b.name));
 
-    const isDifferent =
-      !teams ||
-      teams.length !== scrapedTeams.length ||
-      teams.some((team) => {
-        const scrapedTeam = scrapedTeams.find((t) => t.name === team.name);
-        return (
-          !scrapedTeam ||
-          team.name !== scrapedTeam.name ||
-          team.logo !== scrapedTeam.logo ||
-          team.logoSmall !== scrapedTeam.logoSmall ||
-          team.imageCar !== scrapedTeam.imageCar ||
-          JSON.stringify(team.drivers) !==
-            JSON.stringify(scrapedTeam.drivers) ||
-          team.color !== scrapedTeam.color
-        );
-      });
+    const isDifferent = areTeamsDifferent(
+      teams,
+      scrapedTeams,
+      TEAM_PROPERTIES_TO_CHECK
+    );
 
     if (isDifferent) {
       const { error: deleteError } = await supabase
