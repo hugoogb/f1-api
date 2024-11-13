@@ -1,4 +1,5 @@
-// Mapeo de equipos y sus colores
+import { Team } from "../types/teams.types";
+
 export const TEAM_COLOR_MAPPING: Record<string, string> = {
   McLaren: "#FF8000",
   "Red Bull Racing": "#3671C6",
@@ -11,3 +12,12 @@ export const TEAM_COLOR_MAPPING: Record<string, string> = {
   Alpine: "#0093CC",
   "Kick Sauber": "#000000",
 } as const;
+
+export const TEAM_PROPERTIES_TO_CHECK: (keyof Team)[] = [
+  "name",
+  "logo",
+  "logoSmall",
+  "imageCar",
+  "drivers",
+  "color",
+];
